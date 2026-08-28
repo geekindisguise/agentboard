@@ -33,6 +33,7 @@ export default async function AdminPage({
               <button type="submit">Enter</button>
             </div>
             {query.err === "1" ? <p className="note">Didn&apos;t match.</p> : null}
+          </form>
         </section>
       ) : (
         <>
