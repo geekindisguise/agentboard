@@ -17,11 +17,13 @@ export async function POST(request: Request) {
     return next;
   }
 
+  const proto =
+    request.headers.get("x-forwarded-proto") ?? new URL(request.url).protocol;
   next.cookies.set(adminCookieName, value, {
     httpOnly: true,
     sameSite: "lax",
     path: "/",
-    secure: process.env.NODE_ENV === "production",
+    secure: proto === "https" || proto === "https:",
   });
   return next;
 }

@@ -3,12 +3,11 @@ import { mkdtempSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { describe, it, before } from "node:test";
+import * as db from "./db";
+import { isHardRejectedUrl } from "./reject";
 
 const dir = mkdtempSync(join(tmpdir(), "agentboard-"));
 process.env.DATA_PATH = join(dir, "incidents.json");
-
-const db = await import("./db");
-const { isHardRejectedUrl } = await import("./reject");
 
 describe("board store", () => {
   before(() => {
