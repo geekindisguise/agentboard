@@ -4,7 +4,12 @@ import { hostnameOf } from "@/lib/format";
 
 export const dynamic = "force-dynamic";
 
-export default async function AdminPage() {
+export default async function AdminPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ err?: string }>;
+}) {
+  const query = await searchParams;
   const configured = adminConfigured();
   const authed = await isAdmin();
 
@@ -27,7 +32,7 @@ export default async function AdminPage() {
             <div className="actions" style={{ marginTop: "0.7rem" }}>
               <button type="submit">Enter</button>
             </div>
-          </form>
+            {query.err === "1" ? <p className="note">Didn&apos;t match.</p> : null}
         </section>
       ) : (
         <>

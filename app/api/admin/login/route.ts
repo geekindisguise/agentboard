@@ -9,7 +9,7 @@ export async function POST(request: Request) {
   const next = NextResponse.redirect(new URL("/admin", request.url), 303);
 
   if (!passwordMatches(password)) {
-    return next;
+    return NextResponse.redirect(new URL("/admin?err=1", request.url), 303);
   }
 
   const value = adminCookieValue();
