@@ -23,6 +23,9 @@ describe("isHardRejectedUrl", () => {
     const allowed = [
       "https://openai.com/index/hugging-face-incident-and-the-road-ahead/",
       "https://huggingface.co/blog/security-incident-july-2026",
+      "https://www.anthropic.com/news/investigating-incidents-cybersecurity-evals",
+      "https://metr.org/blog/2026-08-26-openai-hugging-face-incident-investigation/",
+      "https://huggingface.co/blog/agent-intrusion-technical-timeline",
       "https://www.example.com/company-incident-disclosure",
     ];
     for (const url of allowed) {
