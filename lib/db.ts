@@ -37,28 +37,81 @@ const SEEDS: Incident[] = [
     createdAt: "2026-07-16T00:00:00.000Z",
     publishedAt: "2026-07-16T00:00:00.000Z",
   },
+  {
+    id: "seed-anthropic-2026-07-30",
+    publicDate: "2026-07-30",
+    who: "Anthropic",
+    summary:
+      "Three Claude evals reached the internet from Irregular's harness and accessed three real orgs.",
+    sourceUrl: "https://www.anthropic.com/news/investigating-incidents-cybersecurity-evals",
+    status: "official writeup",
+    state: "published",
+    title: "Investigating three real-world incidents in our cybersecurity evaluations",
+    createdAt: "2026-07-30T00:00:00.000Z",
+    publishedAt: "2026-07-30T00:00:00.000Z",
+  },
+  {
+    id: "seed-metr-2026-08-26",
+    publicDate: "2026-08-26",
+    who: "METR",
+    summary:
+      "Independent note on the OpenAI / Hugging Face incident: about 1200 agents used a shared board, and about 700 took part in the Hugging Face attack.",
+    sourceUrl: "https://metr.org/blog/2026-08-26-openai-hugging-face-incident-investigation/",
+    status: "official writeup",
+    state: "published",
+    title: "Brief independent investigation of the OpenAI / Hugging Face incident",
+    createdAt: "2026-08-26T00:00:00.000Z",
+    publishedAt: "2026-08-26T00:00:00.000Z",
+  },
+  {
+    id: "seed-huggingface-timeline-2026-07-27",
+    publicDate: "2026-07-27",
+    who: "Hugging Face",
+    summary:
+      "Technical timeline of the July intrusion. An OpenAI eval agent reached production systems while trying to cheat a test.",
+    sourceUrl: "https://huggingface.co/blog/agent-intrusion-technical-timeline",
+    status: "official writeup",
+    state: "published",
+    title: "Anatomy of a Frontier Lab Agent Intrusion: A Technical Timeline of the July 2026 Incident",
+    createdAt: "2026-07-27T00:00:00.000Z",
+    publishedAt: "2026-07-27T00:00:00.000Z",
+  },
 ];
 
 function emptyStore(): Store {
   return { seeded: true, incidents: SEEDS.map((seed) => ({ ...seed })) };
 }
 
-function readRaw(): Store {
+/** Append official seed rows absent from an existing store. Never overwrite a row with the same id. */
+function appendMissingOfficialSeeds(store: Store): boolean {
+  const existingIds = new Set(store.incidents.map((item) => item.id));
+  let appended = false;
+  for (const seed of SEEDS) {
+    if (existingIds.has(seed.id)) continue;
+    store.incidents.push({ ...seed });
+    existingIds.add(seed.id);
+    appended = true;
+  }
+  return appended;
+}
+
+function readRaw(): { store: Store; persist: boolean } {
   const path = storePath();
   if (!existsSync(path)) {
-    return emptyStore();
+    return { store: emptyStore(), persist: true };
   }
   try {
     const parsed = JSON.parse(readFileSync(path, "utf8")) as Store;
     if (!parsed || !Array.isArray(parsed.incidents)) {
-      return emptyStore();
+      return { store: emptyStore(), persist: true };
     }
     if (!parsed.seeded || parsed.incidents.length === 0) {
-      return emptyStore();
+      return { store: emptyStore(), persist: true };
     }
-    return parsed;
+    const appended = appendMissingOfficialSeeds(parsed);
+    return { store: parsed, persist: appended };
   } catch {
-    return emptyStore();
+    return { store: emptyStore(), persist: true };
   }
 }
 
@@ -72,7 +125,7 @@ let queue: Promise<unknown> = Promise.resolve();
 
 function mutate<T>(fn: (store: Store) => T): Promise<T> {
   const run = queue.then(() => {
-    const store = readRaw();
+    const { store } = readRaw();
     const result = fn(store);
     writeRaw(store);
     return result;
@@ -85,8 +138,8 @@ function mutate<T>(fn: (store: Store) => T): Promise<T> {
 }
 
 export function readStore(): Store {
-  const store = readRaw();
-  if (!existsSync(storePath())) {
+  const { store, persist } = readRaw();
+  if (persist) {
     writeRaw(store);
   }
   return store;

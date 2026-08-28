@@ -42,4 +42,4 @@ Optional Railway env:
 - `/admin` — shared password; publish, reject, or edit the one-liner
 - Hard-reject for how-to / exploit / PoC / payload / “how to reproduce” URLs (never shown on `/`)
 
-Seeds load on first run: OpenAI (27 Aug 2026, official writeup) and Hugging Face (16 Jul 2026, reported).
+Official seeds load on first run, and missing official seed ids are appended on later loads without overwriting existing rows: OpenAI (27 Aug 2026), Hugging Face (16 Jul 2026), Hugging Face timeline (27 Jul 2026), Anthropic (30 Jul 2026), and METR (26 Aug 2026).
